@@ -8,6 +8,9 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// DB_USER=doctorsPortal
+// DB_PASSWORD=Dw17TuH3Ivt52Rog
+
 //////////// MongoDB connection ///////////
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.ueibnfi.mongodb.net/?retryWrites=true&w=majority`;
 
