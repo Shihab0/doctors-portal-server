@@ -52,7 +52,11 @@ app.get("/appointmentOption", async (req, res) => {
         (book) => book.treatment === option.name
       );
       const bookedSlots = optionBooked.map((book) => book.slot);
-      // console.log(option.name, bookedSlots);
+      const remainingSlots = option.slots.filter(
+        (slot) => !bookedSlots.includes(slot)
+      );
+      option.slots = remainingSlots;
+      // console.log(option.name, bookedSlots, "remaining: ", remainingSlots);
     });
     res.send(options);
   } catch (err) {
@@ -60,12 +64,24 @@ app.get("/appointmentOption", async (req, res) => {
   }
 });
 
-//////////////////////////////////////////
-//////////////bookings option get post etc ///////////////
+//////////////////////////////////////////////////////////
+//////////////bookings option get post etc///////////////
 
 app.post("/bookings", async (req, res) => {
   try {
     const booking = req.body;
+    const query = {
+      appointmentDate: booking.appointmentDate,
+      email: booking.email,
+      treatment: booking.treatment,
+    };
+
+    const alreadyBooked = await bookingsCollection.find(query).toArray();
+    if (alreadyBooked.length) {
+      const message = `You already booked this on ${booking.appointmentDate}`;
+      return res.send({ acknowledged: false, message });
+    }
+    console.log(booking);
     const result = await bookingsCollection.insertOne(booking);
     res.send(result);
   } catch (err) {
